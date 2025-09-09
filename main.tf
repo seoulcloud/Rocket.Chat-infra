@@ -14,6 +14,26 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.1"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.9"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.4"
+    }
+    external = {
+      source  = "hashicorp/external"
+      version = "~> 2.3"
+    }
   }
 }
 
@@ -42,6 +62,7 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+# Data Sources
 data "aws_instance" "k3s_master" {
   filter {
     name   = "tag:Name"
@@ -50,9 +71,20 @@ data "aws_instance" "k3s_master" {
   depends_on = [module.compute]
 }
 
+# k3s 설치 완료 대기
+resource "time_sleep" "wait_for_k3s" {
+  depends_on = [module.compute]
+  create_duration = "120s"  # 2분 대기
+}
+
 data "external" "k3s_token" {
-  program    = ["bash", "-c", "ssh -o StrictHostKeyChecking=no ubuntu@${data.aws_instance.k3s_master.public_ip} 'sudo cat /var/lib/rancher/k3s/server/node-token' | jq -R '{token: ., certificate: \"$(sudo cat /var/lib/rancher/k3s/server/tls/server-ca.crt | base64 -w 0)\"}'"]
-  depends_on = [data.aws_instance.k3s_master]
+  program = ["bash", "-c", <<-EOT
+    ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 -i ~/.ssh/${var.project_name}-key.pem ubuntu@${data.aws_instance.k3s_master.public_ip} '
+      sudo cat /var/lib/rancher/k3s/server/node-token
+    ' | jq -R '{token: ., certificate: "'"$(ssh -o StrictHostKeyChecking=no -i ~/.ssh/${var.project_name}-key.pem ubuntu@${data.aws_instance.k3s_master.public_ip} 'sudo cat /var/lib/rancher/k3s/server/tls/server-ca.crt | base64 -w 0')"'"}'
+  EOT
+  ]
+  depends_on = [time_sleep.wait_for_k3s, module.security]
 }
 
 # 네트워킹 모듈
@@ -183,6 +215,7 @@ module "edge" {
   project_name           = var.project_name
   environment           = var.environment
   k3s_master_public_ip  = module.compute.k3s_master_public_ip
+  aws_region            = var.aws_region
   s3_bucket_arn         = module.storage.rocketchat_files_bucket_arn
   s3_bucket_domain_name = module.storage.rocketchat_files_bucket_domain_name
   s3_bucket_name        = module.storage.rocketchat_files_bucket_name

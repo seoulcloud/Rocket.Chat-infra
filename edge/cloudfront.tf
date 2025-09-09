@@ -15,9 +15,9 @@ resource "aws_cloudfront_distribution" "rocketchat_distribution" {
     origin_id                = "S3-${var.s3_bucket_name}"
   }
 
-  # k3s Master 노드 오리진 추가
+  # k3s Master 노드 오리진 추가 (DNS 사용)
   origin {
-    domain_name = var.k3s_master_public_ip
+    domain_name = "${var.k3s_master_public_ip}.ec2.${var.aws_region}.amazonaws.com"
     origin_id   = "k3s-master-${var.project_name}"
 
     custom_origin_config {

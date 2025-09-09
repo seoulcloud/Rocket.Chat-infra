@@ -3,7 +3,7 @@
 # k3s 클러스터 상태 확인 스크립트
 set -e
 
-MASTER_IP="${master_ip}"
+MASTER_IP="10.0.1.54"
 
 echo "Checking k3s cluster status..."
 

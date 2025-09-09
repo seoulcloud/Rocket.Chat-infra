@@ -3,7 +3,7 @@
   hosts: all
   become: yes
   vars:
-    master_ip: "${master_ip}"
+    master_ip: "10.0.1.54"
 
   tasks:
     - name: Update system packages

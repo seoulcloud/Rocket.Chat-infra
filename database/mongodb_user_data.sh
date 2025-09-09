@@ -8,10 +8,10 @@ apt-get update
 apt-get upgrade -y
 
 # MongoDB GPG 키 추가
-wget -qO - https://www.mongodb.org/static/pgp/server-${mongodb_version}.asc | apt-key add -
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add -
 
 # MongoDB 저장소 추가
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/${mongodb_version} multiverse" | tee /etc/apt/sources.list.d/mongodb-org-${mongodb_version}.list
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 
 # MongoDB 설치
 apt-get update

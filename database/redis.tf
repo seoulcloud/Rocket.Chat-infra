@@ -4,7 +4,7 @@ resource "aws_instance" "redis" {
   instance_type          = var.redis_instance_type
   key_name              = var.key_pair_name
   vpc_security_group_ids = [var.redis_security_group_id]
-  subnet_id             = var.private_subnet_2_id
+  subnet_id             = var.private_subnet_1_id
 
   root_block_device {
     volume_type = "gp2"
@@ -26,7 +26,7 @@ resource "aws_instance" "redis" {
 
 # Redis EBS Volume for Data Persistence
 resource "aws_ebs_volume" "redis_data" {
-  availability_zone = var.availability_zone_2
+  availability_zone = var.availability_zone_1
   size             = var.redis_data_volume_size
   type             = "gp2"
   encrypted        = true
