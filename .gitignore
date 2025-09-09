@@ -1,0 +1,186 @@
+# Terraform 민감 파일들
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+terraform.tfvars
+terraform.tfvars.json
+
+# Terraform 상태 파일들
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Terraform 플랜 파일들
+*.tfplan
+*.tfplan.*
+
+# AWS 관련 민감 파일들
+.aws/
+aws-credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# SSH 키 파일들
+id_rsa*
+id_dsa*
+id_ed25519*
+id_ecdsa*
+known_hosts
+authorized_keys
+
+# 환경 변수 파일들
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# 로그 파일들
+*.log
+logs/
+log/
+
+# 임시 파일들
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# IDE 관련 파일들
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.atom/
+.brackets.json
+
+# OS 관련 파일들
+.DS_Store
+.DS_Store?
+._*
+
+# Terraform 생성 Key Pair
+keys/
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 백업 파일들
+*.bak
+*.backup
+*.old
+*.orig
+
+# 압축 파일들
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# 테스트 결과 파일들
+test-results/
+k6-results/
+*.json
+!package.json
+!package-lock.json
+
+# Node.js 관련 (k6 테스트용)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python 관련
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Ansible 관련
+*.retry
+.ansible/
+
+# Docker 관련
+.dockerignore
+docker-compose.override.yml
+
+# Kubernetes 관련
+kubeconfig
+*.kubeconfig
+
+# 모니터링 데이터
+prometheus-data/
+grafana-data/
+metrics/
+
+# 로컬 설정 파일들
+local.tf
+local.tfvars
+dev.tfvars
+prod.tfvars
+staging.tfvars
+
+# 비밀번호 및 토큰 파일들
+secrets/
+passwords/
+tokens/
+*.secret
+*.token
+
+# 사용자 정의 스크립트 결과
+user-scripts-output/
+custom-scripts/
+
+# Terraform 프로바이더 캐시
+.terraform/providers/
+
+# Terraform 워크스페이스
+.terraform/environment
+
+# 로컬 개발용 파일들
+local-dev/
+dev-overrides/
+personal-config/
+
+# 성능 테스트 결과
+load-test-results/
+benchmark-results/
+performance-logs/
+
+# 인증서 및 키 파일들
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# 데이터베이스 덤프 파일들
+*.sql
+*.dump
+*.backup
+
+# 설정 오버라이드 파일들
+override.tf
+override.tfvars
+custom.tf
+custom.tfvars

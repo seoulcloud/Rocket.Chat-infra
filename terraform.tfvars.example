@@ -1,0 +1,46 @@
+# Rocket.Chat FinOps 최적화 - 프리티어 설정 예시
+# 이 파일을 terraform.tfvars로 복사하여 사용하세요
+
+# 프로젝트 기본 설정
+project_name = "rocketchat"
+environment  = "dev"
+aws_region   = "ap-northeast-2"
+
+# 네트워킹 설정
+vpc_cidr              = "10.0.0.0/16"
+public_subnet_1_cidr  = "10.0.1.0/24"
+public_subnet_2_cidr  = "10.0.2.0/24"
+private_subnet_1_cidr = "10.0.3.0/24"
+private_subnet_2_cidr = "10.0.4.0/24"
+
+# EC2 Key Pair (자동 생성됨)
+key_pair_name = "rocketchat-key"
+
+# 프리티어 최적화된 인스턴스 설정
+# MongoDB: t3.small (2 vCPU, 2GB RAM) - 프리티어 750시간/월
+mongodb_instance_type = "t3.small"
+mongodb_volume_size   = 20  # 프리티어 30GB EBS
+mongodb_data_volume_size = 20  # 프리티어 30GB EBS
+
+# Redis: t2.micro (1 vCPU, 1GB RAM) - 프리티어 750시간/월
+redis_instance_type = "t2.micro"
+redis_volume_size   = 8   # 프리티어 30GB EBS
+redis_data_volume_size = 8   # 프리티어 30GB EBS
+
+# k3s Master: t3.medium (2 vCPU, 4GB RAM) - 프리티어 750시간/월
+k3s_master_instance_type = "t3.medium"
+k3s_volume_size = 20  # 프리티어 30GB EBS
+
+# k3s Worker: t3.medium (2 vCPU, 4GB RAM) - 프리티어 750시간/월
+k3s_worker_instance_type = "t3.medium"
+
+# Rocket.Chat 설정
+rocketchat_replicas     = 1
+rocketchat_min_replicas = 1
+rocketchat_max_replicas = 3  # 프리티어 제한으로 최대 3개로 제한
+rocketchat_version      = "latest"
+
+# 모니터링 설정
+prometheus_version    = "v2.45.0"
+grafana_version       = "10.0.0"
+grafana_admin_password = "admin123"
