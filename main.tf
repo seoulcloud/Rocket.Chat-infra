@@ -6,18 +6,12 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.23"
-    }
+    # kubernetes provider 제거 - AWS 리소스만 관리
     random = {
       source  = "hashicorp/random"
       version = "~> 3.1"
     }
-    time = {
-      source  = "hashicorp/time"
-      version = "~> 0.9"
-    }
+    # time provider 제거 - AWS 리소스만 관리
     null = {
       source  = "hashicorp/null"
       version = "~> 3.2"
@@ -30,10 +24,7 @@ terraform {
       source  = "hashicorp/local"
       version = "~> 2.4"
     }
-    external = {
-      source  = "hashicorp/external"
-      version = "~> 2.3"
-    }
+    # external provider 제거 - AWS 리소스만 관리
   }
 }
 
@@ -50,42 +41,14 @@ provider "aws" {
   }
 }
 
-# Kubernetes Provider 설정
-provider "kubernetes" {
-  host                   = "https://${data.aws_instance.k3s_master.public_ip}:6443"
-  token                  = data.external.k3s_token.result.token
-  cluster_ca_certificate = base64decode(data.external.k3s_token.result.certificate)
-}
+# Kubernetes Provider 제거 - AWS 리소스만 관리
 
 # Data Sources
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
-# Data Sources
-data "aws_instance" "k3s_master" {
-  filter {
-    name   = "tag:Name"
-    values = ["${var.project_name}-k3s-master"]
-  }
-  depends_on = [module.compute]
-}
-
-# k3s 설치 완료 대기
-resource "time_sleep" "wait_for_k3s" {
-  depends_on = [module.compute]
-  create_duration = "120s"  # 2분 대기
-}
-
-data "external" "k3s_token" {
-  program = ["bash", "-c", <<-EOT
-    ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 -i ~/.ssh/${var.project_name}-key.pem ubuntu@${data.aws_instance.k3s_master.public_ip} '
-      sudo cat /var/lib/rancher/k3s/server/node-token
-    ' | jq -R '{token: ., certificate: "'"$(ssh -o StrictHostKeyChecking=no -i ~/.ssh/${var.project_name}-key.pem ubuntu@${data.aws_instance.k3s_master.public_ip} 'sudo cat /var/lib/rancher/k3s/server/tls/server-ca.crt | base64 -w 0')"'"}'
-  EOT
-  ]
-  depends_on = [time_sleep.wait_for_k3s, module.security]
-}
+# k3s 관련 리소스 제거 - AWS 리소스만 관리
 
 # 네트워킹 모듈
 module "networking" {
@@ -105,10 +68,11 @@ module "networking" {
 module "security" {
   source = "./security"
 
-  project_name = var.project_name
-  environment  = var.environment
-  vpc_id       = module.networking.vpc_id
-  vpc_cidr     = var.vpc_cidr
+  project_name        = var.project_name
+  environment         = var.environment
+  vpc_id              = module.networking.vpc_id
+  vpc_cidr            = var.vpc_cidr
+  k3s_api_server_cidr = var.k3s_api_server_cidr
 }
 
 # 데이터베이스 모듈
@@ -154,38 +118,12 @@ module "compute" {
   vpc_id                = module.networking.vpc_id
   mongodb_private_ip    = module.database.mongodb_private_ip
   redis_private_ip      = module.database.redis_private_ip
+  s3_access_instance_profile_name = module.storage.s3_access_instance_profile_name
 }
 
-# k3s 모듈
-module "k3s" {
-  source = "./k3s"
+# k3s 모듈 제거 - AWS 리소스만 관리
 
-  project_name   = var.project_name
-  k3s_master_ip  = module.compute.k3s_master_private_ip
-  k3s_worker_ips = module.compute.k3s_worker_private_ips
-  mongodb_url    = module.database.mongodb_url
-  redis_url      = module.database.redis_url
-}
-
-# 앱 모듈
-module "apps" {
-  source = "./apps"
-
-  project_name                        = var.project_name
-  environment                         = var.environment
-  mongodb_url                         = module.database.mongodb_url
-  redis_url                           = module.database.redis_url
-  cloudfront_domain_name              = module.edge.cloudfront_domain_name
-  rocketchat_replicas                 = var.rocketchat_replicas
-  rocketchat_min_replicas             = var.rocketchat_min_replicas
-  rocketchat_max_replicas             = var.rocketchat_max_replicas
-  rocketchat_version                  = var.rocketchat_version
-  prometheus_version                  = var.prometheus_version
-  grafana_version                     = var.grafana_version
-  grafana_admin_password              = var.grafana_admin_password
-  rocketchat_service_account_role_arn = module.iam.rocketchat_service_account_role_arn
-  prometheus_service_account_role_arn = module.iam.prometheus_service_account_role_arn
-}
+# 앱 모듈 제거 - AWS 리소스만 관리
 
 # 스토리지 모듈
 module "storage" {
@@ -212,7 +150,7 @@ module "iam" {
 module "edge" {
   source = "./edge"
 
-  project_name           = var.project_name
+  project_name          = var.project_name
   environment           = var.environment
   k3s_master_public_ip  = module.compute.k3s_master_public_ip
   aws_region            = var.aws_region

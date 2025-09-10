@@ -14,22 +14,22 @@ variable "aws_region" {
 }
 
 variable "k3s_cluster_id" {
-  description = "k3s 클러스터 ID (OIDC용)"
+  description = "k3s 클러스터 ID"
   type        = string
   default     = "k3s-cluster"
 }
 
 variable "s3_files_bucket_arn" {
-  description = "Rocket.Chat 파일 S3 버킷 ARN"
+  description = "S3 Files 버킷 ARN"
   type        = string
 }
 
 variable "s3_logs_bucket_arn" {
-  description = "Rocket.Chat 로그 S3 버킷 ARN"
+  description = "S3 Logs 버킷 ARN"
   type        = string
 }
 
 variable "s3_backups_bucket_arn" {
-  description = "Rocket.Chat 백업 S3 버킷 ARN"
+  description = "S3 Backups 버킷 ARN"
   type        = string
 }

@@ -62,3 +62,10 @@ variable "redis_private_ip" {
   description = "Redis 프라이빗 IP"
   type        = string
 }
+
+variable "s3_access_instance_profile_name" {
+  description = "S3 접근을 위한 IAM 인스턴스 프로필 이름"
+  type        = string
+}
+
+# k3s 클러스터용 IAM 인스턴스 프로필은 S3 접근 프로필에 통합됨

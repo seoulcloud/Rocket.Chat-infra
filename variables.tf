@@ -142,47 +142,11 @@ variable "k3s_volume_size" {
   default     = 30
 }
 
-# Rocket.Chat 설정
-variable "rocketchat_replicas" {
-  description = "Rocket.Chat 초기 복제본 수"
-  type        = number
-  default     = 1
-}
+# Rocket.Chat 및 모니터링 설정 제거 - AWS 리소스만 관리
 
-variable "rocketchat_min_replicas" {
-  description = "Rocket.Chat 최소 복제본 수"
-  type        = number
-  default     = 1
-}
-
-variable "rocketchat_max_replicas" {
-  description = "Rocket.Chat 최대 복제본 수"
-  type        = number
-  default     = 5
-}
-
-variable "rocketchat_version" {
-  description = "Rocket.Chat 버전"
+# k3s API 서버 접근 설정
+variable "k3s_api_server_cidr" {
+  description = "k3s API 서버 접근 허용 CIDR 블록 (기본값: 모든 IP 허용)"
   type        = string
-  default     = "latest"
-}
-
-# 모니터링 설정
-variable "prometheus_version" {
-  description = "Prometheus 버전"
-  type        = string
-  default     = "v2.45.0"
-}
-
-variable "grafana_version" {
-  description = "Grafana 버전"
-  type        = string
-  default     = "10.0.0"
-}
-
-variable "grafana_admin_password" {
-  description = "Grafana 관리자 비밀번호"
-  type        = string
-  default     = "admin123"
-  sensitive   = true
+  default     = "0.0.0.0/0"
 }

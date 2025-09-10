@@ -9,23 +9,25 @@ resource "aws_cloudfront_origin_access_control" "rocketchat_oac" {
 
 # CloudFront Distribution for Rocket.Chat
 resource "aws_cloudfront_distribution" "rocketchat_distribution" {
-  origin {
-    domain_name              = var.s3_bucket_domain_name
-    origin_access_control_id = aws_cloudfront_origin_access_control.rocketchat_oac.id
-    origin_id                = "S3-${var.s3_bucket_name}"
-  }
-
-  # k3s Master 노드 오리진 추가 (DNS 사용)
+  # k3s Master 노드 오리진 (Rocket.Chat 애플리케이션)
+  # AWS EC2 퍼블릭 DNS 사용 (IP 대신 DNS 사용)
   origin {
     domain_name = "${var.k3s_master_public_ip}.ec2.${var.aws_region}.amazonaws.com"
     origin_id   = "k3s-master-${var.project_name}"
 
     custom_origin_config {
-      http_port              = 30000
+      http_port              = 80
       https_port             = 443
       origin_protocol_policy = "http-only"
       origin_ssl_protocols   = ["TLSv1.2"]
     }
+  }
+
+  # S3 버킷 오리진 (정적 파일용)
+  origin {
+    domain_name              = var.s3_bucket_domain_name
+    origin_access_control_id = aws_cloudfront_origin_access_control.rocketchat_oac.id
+    origin_id                = "S3-${var.s3_bucket_name}"
   }
 
   enabled             = true
@@ -33,7 +35,7 @@ resource "aws_cloudfront_distribution" "rocketchat_distribution" {
   comment             = "CloudFront distribution for Rocket.Chat"
   default_root_object = "index.html"
 
-  # 기본 캐시 동작 - k3s Master 노드로 라우팅
+  # 기본 캐시 동작 - k3s Master 노드로 라우팅 (Rocket.Chat 애플리케이션)
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
@@ -47,7 +49,7 @@ resource "aws_cloudfront_distribution" "rocketchat_distribution" {
       }
     }
 
-    viewer_protocol_policy = "allow-all"
+    viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 0
     max_ttl                = 0
@@ -67,7 +69,7 @@ resource "aws_cloudfront_distribution" "rocketchat_distribution" {
       }
     }
 
-    viewer_protocol_policy = "allow-all"
+    viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 86400
     max_ttl                = 31536000
@@ -88,7 +90,7 @@ resource "aws_cloudfront_distribution" "rocketchat_distribution" {
       }
     }
 
-    viewer_protocol_policy = "allow-all"
+    viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 86400
     max_ttl                = 31536000

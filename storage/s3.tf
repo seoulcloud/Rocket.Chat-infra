@@ -223,6 +223,23 @@ resource "aws_iam_policy" "s3_access_policy" {
           aws_s3_bucket.rocketchat_backups.arn,
           "${aws_s3_bucket.rocketchat_backups.arn}/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:DescribeInstances",
+          "ec2:DescribeImages",
+          "ec2:DescribeTags",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeSnapshots",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeAvailabilityZones",
+          "ec2:DescribeRegions"
+        ]
+        Resource = "*"
       }
     ]
   })

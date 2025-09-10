@@ -26,21 +26,7 @@ output "private_subnet_2_id" {
   value       = module.networking.private_subnet_2_id
 }
 
-# Key Pair 정보
-output "key_pair_name" {
-  description = "생성된 Key Pair 이름"
-  value       = module.security.key_pair_name
-}
-
-output "private_key_path" {
-  description = "Private Key 파일 경로"
-  value       = module.security.private_key_path
-}
-
-output "public_key_path" {
-  description = "Public Key 파일 경로"
-  value       = module.security.public_key_path
-}
+# Key Pair 정보 제거 - 수동으로 생성된 키 페어 사용
 
 # ALB 출력 제거
 
@@ -114,21 +100,7 @@ output "cloudfront_domain_name" {
   value       = module.edge.cloudfront_domain_name
 }
 
-# 액세스 정보 (CloudFront를 통한 접근)
-output "rocketchat_access_url" {
-  description = "Rocket.Chat 접근 URL (CloudFront)"
-  value       = "https://${module.edge.cloudfront_domain_name}"
-}
-
-output "grafana_access_url" {
-  description = "Grafana 접근 URL (k3s Master 직접 접근)"
-  value       = "http://${module.compute.k3s_master_public_ip}:30000"
-}
-
-output "prometheus_access_url" {
-  description = "Prometheus 접근 URL"
-  value       = "http://${module.compute.k3s_master_public_ip}:30001"
-}
+# 액세스 정보 제거 - AWS 리소스만 관리
 
 # IAM 출력
 output "k3s_oidc_provider_arn" {
@@ -148,7 +120,7 @@ output "prometheus_service_account_role_arn" {
 
 # SSH 접속 정보
 output "ssh_connection_commands" {
-  description = "SSH 접속 명령어"
+  description = "SSH 접속 명령어 (수동으로 다운로드한 키 파일 사용)"
   value = {
     master  = "ssh -i ~/.ssh/${var.key_pair_name}.pem ubuntu@${module.compute.k3s_master_public_ip}"
     worker1 = "ssh -i ~/.ssh/${var.key_pair_name}.pem ubuntu@${module.compute.k3s_worker_public_ips[0]}"

@@ -1,17 +1,7 @@
-# Key Pair 출력
+# Key Pair 출력 - 수동 생성된 키 페어 사용
 output "key_pair_name" {
-  description = "생성된 Key Pair 이름"
-  value       = aws_key_pair.rocketchat_key.key_name
-}
-
-output "private_key_path" {
-  description = "Private Key 파일 경로"
-  value       = local_file.rocketchat_private_key.filename
-}
-
-output "public_key_path" {
-  description = "Public Key 파일 경로"
-  value       = local_file.rocketchat_public_key.filename
+  description = "사용할 Key Pair 이름 (수동 생성)"
+  value       = "${var.project_name}-key"
 }
 
 # ALB Security Group 출력 제거

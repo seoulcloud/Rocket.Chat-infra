@@ -7,6 +7,7 @@ resource "aws_instance" "k3s_master" {
   key_name              = var.key_pair_name
   vpc_security_group_ids = [var.ec2_security_group_id]
   subnet_id             = var.public_subnet_1_id
+  iam_instance_profile   = var.s3_access_instance_profile_name
 
   root_block_device {
     volume_type = "gp2"
@@ -34,6 +35,7 @@ resource "aws_instance" "k3s_worker_1" {
   key_name              = var.key_pair_name
   vpc_security_group_ids = [var.ec2_security_group_id]
   subnet_id             = var.public_subnet_2_id
+  iam_instance_profile   = var.s3_access_instance_profile_name
 
   root_block_device {
     volume_type = "gp2"
@@ -62,6 +64,7 @@ resource "aws_instance" "k3s_worker_2" {
   key_name              = var.key_pair_name
   vpc_security_group_ids = [var.ec2_security_group_id]
   subnet_id             = var.public_subnet_1_id
+  iam_instance_profile   = var.s3_access_instance_profile_name
 
   root_block_device {
     volume_type = "gp2"

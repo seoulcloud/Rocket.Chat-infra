@@ -6,11 +6,20 @@ resource "aws_security_group" "ec2_sg" {
   vpc_id      = var.vpc_id
   description = "Security group for EC2 instances (k3s nodes)"
 
-  # HTTP 직접 접근 허용 (ALB 제거로 인해)
+  # HTTP 직접 접근 허용 (CloudFront용)
   ingress {
-    description = "HTTP direct access"
-    from_port   = 3000
-    to_port     = 3000
+    description = "HTTP for CloudFront"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTPS 직접 접근 허용 (CloudFront용)
+  ingress {
+    description = "HTTPS for CloudFront"
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -23,13 +32,13 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # k3s API Server
+  # k3s API Server - 외부 접근 허용 (Terraform에서 접근하기 위해)
   ingress {
     description = "k3s API Server"
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = [var.k3s_api_server_cidr]
   }
 
   # k3s Flannel VXLAN
